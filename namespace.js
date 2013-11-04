@@ -1,22 +1,24 @@
 module = function (namespace, module) {
     var global = global || window,
         key,
-        leaf,
-        root = global,
+        leaf = global,
+        name,
+        root,
         tree;
 
     tree = namespace.split('.');
 
     while (tree.length) {
-        leaf = tree.shift();
-        root = root[leaf] = root[leaf] || {};
+        name = tree.shift();
+        root = leaf;
+        leaf = root[name] = root[name] || {};
     }
 
     // empty object?
-    for (key in root) {
+    for (key in leaf) {
         console.log('~~~~ namespacejs: Ruh roh. Potential namespace collision on ' + namespace);
         break;
     }
 
-    module.call(root, global);
-}
+    module.call(leaf, global, root);
+};
