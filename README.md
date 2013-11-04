@@ -35,4 +35,4 @@ module('I.Am.An.Arbitrary.Namespace', function (global, parent) {
 
 This creates a namespace branch 5 layers deep, and all 4 intermediary namespaces (I, Am, An and Arbitrary) will be created as empty objects.
 
-If you accidentally give two modules the same namespace, NamespaceJS will kindly inform you of the conflict by logging a warning.
+If you accidentally give two modules the same namespace, NamespaceJS will kindly inform you of the conflict by logging a warning. In addition, if a namespace is not capitalized, NamespaceJS will kindly inform you so that you can conform to the best practice of capitalizing your modules, and thereby, avoid naming collisions.
