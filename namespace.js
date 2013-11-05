@@ -13,7 +13,8 @@ module = function (namespace, module) {
 
         // is capitalized to conform to best practice of naming modules?
         if (/[^A-Z]/.test(name[0])) {
-            console.log('~~~~ namespacejs: Ruh roh. It\'s considered best practice to capitalize your namespace for ' + name + ' to avoid naming collisions.');
+            console.log('~~~~ namespacejs: Ruh roh. It\'s considered best practice to capitalize your namespace for ' + name +
+                        'in namespace ' + namespace + ' to avoid naming collisions.');
         }
 
         root = leaf;
