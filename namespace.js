@@ -23,8 +23,10 @@ module = function (namespace, module) {
 
     // empty object?
     for (key in leaf) {
-        console.log('~~~~ namespacejs: Ruh roh. Potential namespace collision on ' + namespace);
-        break;
+        if (leaf.hasOwnProperty(key)) {
+            console.log('~~~~ namespacejs: Ruh roh. Potential namespace collision on ' + namespace);
+            break;
+        }
     }
 
     module.call(leaf, global, root);
