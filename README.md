@@ -37,4 +37,6 @@ This creates a namespace branch 5 layers deep, and all 4 intermediary namespaces
 
 If you accidentally give two modules the same namespace, NamespaceJS will kindly inform you of the conflict by logging a warning. In addition, if a namespace is not capitalized, NamespaceJS will kindly inform you so that you can conform to the best practice of capitalizing your modules, and thereby, avoid naming collisions.
 
+A sample demonstration is included in this repository. You can run it by opening index.html in a web browser and reviewing the console.
+
 NamespaceJS is a mere 438 bytes minified.
