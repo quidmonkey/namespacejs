@@ -1,10 +1,10 @@
 module = function (namespace, module) {
     var args = [],
+        dependencies,
         global = global || window,
         key,
         leaf = global,
         name,
-        params,
         required,
         root,
         tree;
@@ -32,16 +32,12 @@ module = function (namespace, module) {
     //     }
     // }
 
-    if (module.dependencies[leaf]) {
-        throw '~~~~ namespacejs: Namespace collision on \'' + name +'\' for namespace \'' + namespace + '\'';
-    }
-
-    module.dependencies[leaf] = namespace;
+    cacheModule(name, namespace);
     
-    params = getParams(module);
+    dependencies = getDependencies(module);
 
-    while(params.length) {
-        required = getModule(params.shift());
+    while(dependencies.length) {
+        required = getModule(dependencies.shift());
         if (required === null) {
             return hasDependencies(namespace, module);
         }
@@ -50,25 +46,52 @@ module = function (namespace, module) {
 
     // module.call(leaf, global, root);
     module.apply(leaf, args);
+
+    checkUnloaded();
 };
 
-checkCache = function () {
-    var cache = module.cache,
-        toLoad;
+cacheModule = function (name, namespace) {
+    if (module.modules[name]) {
+        throw '~~~~ namespacejs: Namespace collision on \'' + name +'\' for namespace \'' + namespace + '\'';
+    }
 
-    module.cache = [];
+    module.modules[name] = namespace;
+};
 
-    while (cache.length) {
-        toLoad = cache.shift();
+checkUnloaded = function () {
+    var toLoad,
+        unloaded = module.unloaded;
+
+    module.unloaded = [];
+
+    while (unloaded.length) {
+        toLoad = unloaded.shift();
         module(toLoad.namespace, toLoad.module);
     }
 };
 
 getModule = function (leaf) {
-    return module.dependencies[leaf];
+    return module.modules[leaf];
 };
 
-getParams = function (module) {
+// getDependencies = function (module) {
+//     var i,
+//         params = /\(([^)]+)/.exec(module);
+
+//     if (!params[1]) { return []; }
+
+//     params = params[1].split(/\s*,\s*/);
+    
+//     for (i = params.length; i--;) {
+//         if (!/\$/.test(params[i])) {
+//             params.splice(i, 1);
+//         }
+//     }
+
+//     return params;
+// };
+
+getDependencies = function (module) {
     var i,
         params = /\(([^)]+)/.exec(module);
 
@@ -76,21 +99,17 @@ getParams = function (module) {
 
     params = params[1].split(/\s*,\s*/);
     
-    for (i = params.length; i--;) {
-        if (!/\$/.test(params[i])) {
-            params.splice(i, 1);
-        }
-    }
+    params.shift();
 
     return params;
 };
 
 hasDependencies = function (namespace, module) {
-    module.cache.push({
+    module.unloaded.push({
         namespace: namespace,
         module: module
     });
 };
 
-module.cache = [];
-module.dependencies = {};
+module.modules = {};
+module.unloaded = [];
