@@ -1,7 +1,7 @@
-module('I.Am.An.Arbitrary.Namespace', function (global, parent) {});
+module('I.Am.An.Arbitrary.Namespace', function (global) {});
 
 console.log('\n~~~~ Warnings');
-module('bad.practice', function (global, parent) {}); // generate non-capitalized warning
+module('bad.practice', function (global) {}); // generate non-capitalized warning
 
 console.log('\n~~~~ global scope');
 console.log('Is x undefined? ' + (typeof x === 'undefined'));
@@ -18,4 +18,4 @@ console.log('Namespace:', this.I.Am.An.Arbitrary.Namespace);
 console.log('bad:', this.bad);
 console.log('practice:', this.bad.practice);
 
-module('Foo.Bar.Baz', function (global, parent) {});  // generate conflict warning
+module('Foo.Bar.Baz', function (global) {});  // generate conflict warning

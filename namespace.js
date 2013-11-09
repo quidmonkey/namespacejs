@@ -16,8 +16,10 @@
 
             // is capitalized to conform to best practice of naming modules?
             if (/[^A-Z]/.test(name[0])) {
-                console.log('~~~~ namespacejs: Ruh roh. It\'s considered best practice to capitalize your namespace for \'' + name +
-                            '\' in namespace \'' + namespace + '\' to avoid naming collisions.');
+                console.log(
+                    '~~~~ namespacejs: Ruh roh. It\'s considered best practice to capitalize your namespace for \'' +
+                    name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
+                );
             }
 
             root = leaf;
@@ -28,7 +30,7 @@
         dependencies = getDependencies(module);
         while(dependencies.length) {
             required = getModule(dependencies.shift());
-            if (required === null) {
+            if (required == null) {
                 return hasDependencies(namespace, module);
             }
             args.push(required);
@@ -48,8 +50,10 @@
     function cacheModule (name, namespace, module) {
         // already cached?
         if (global.module.modules[name]) {
-            console.log('~~~~ namespacejs: Ruh roh. Potential namespace collision on \'' + name + 
-                        '\' for namespace \'' + namespace + '\'');
+            console.log(
+                '~~~~ namespacejs: Ruh roh. Potential namespace collision on \'' +
+                name + '\' for namespace \'' + namespace + '\''
+            );
         } else {
             global.module.modules[name] = module;
         }
