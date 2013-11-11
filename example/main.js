@@ -1,7 +1,10 @@
-module('I.Am.An.Arbitrary.Namespace', function (global) {});
+module('I.Am.An.Arbitrary.Namespace', function (Baz) {
+    console.log('\n~~~~ Namespace Scope');
+    console.log('I can haz Baz?', Baz);
+});
 
 console.log('\n~~~~ Warnings');
-module('bad.practice', function (global) {}); // generate non-capitalized warning
+module('bad.practice', function () {}); // generate non-capitalized warning
 
 console.log('\n~~~~ global scope');
 console.log('Is x undefined? ' + (typeof x === 'undefined'));
@@ -18,4 +21,4 @@ console.log('Namespace:', this.I.Am.An.Arbitrary.Namespace);
 console.log('bad:', this.bad);
 console.log('practice:', this.bad.practice);
 
-module('Foo.Bar.Baz', function (global) {});  // generate conflict warning
+module('Foo.Bar.Baz', function () {});  // generate conflict warning

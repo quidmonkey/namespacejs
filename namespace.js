@@ -1,7 +1,7 @@
 (function (global) {
 
-    global.module = function module (namespace, module) {
-        var args = [global],
+    global.module = function module (namespace, closure) {
+        var args = [],
             dependencies,
             key,
             leaf = global,
@@ -17,7 +17,7 @@
             // is capitalized to conform to best practice of naming modules?
             if (/[^A-Z]/.test(name[0])) {
                 console.log(
-                    '~~~~ namespacejs: Ruh roh. It\'s considered best practice to capitalize your namespace for \'' +
+                    '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
                     name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
                 );
             }
@@ -27,73 +27,67 @@
         }
         
         // get dependencies
-        dependencies = getDependencies(module);
+        dependencies = getDependencies(closure);
         while(dependencies.length) {
             required = getModule(dependencies.shift());
-            if (required == null) {
-                return hasDependencies(namespace, module);
+            if (!required) {
+                return hasDependencies(namespace, closure);
             }
             args.push(required);
         }
 
         // create module
-        module.apply(leaf, args);
+        closure.apply(leaf, args);
         cacheModule(name, namespace, leaf);
 
         // any unloaded modules?
         checkUnloaded();
     };
 
-    global.module.modules = {};     // cached module set
-    global.module.unloaded = [];    // modules with dependencies that can't be loaded yet
+    global.modules = {};     // cached module set
+    global.unloaded = [];    // modules with unloaded dependencies
 
     function cacheModule (name, namespace, module) {
         // already cached?
-        if (global.module.modules[name]) {
+        if (global.modules[name]) {
             console.log(
                 '~~~~ namespacejs: Ruh roh. Potential namespace collision on \'' +
                 name + '\' for namespace \'' + namespace + '\''
             );
         } else {
-            global.module.modules[name] = module;
+            global.modules[name] = module;
         }
-    };
+    }
 
     function checkUnloaded () {
         var toLoad,
-            unloaded = global.module.unloaded;
+            unloaded = global.unloaded;
 
-        global.module.unloaded = [];
+        global.unloaded = [];
 
         while (unloaded.length) {
             toLoad = unloaded.shift();
-            global.module(toLoad.namespace, toLoad.module);
+            global.module(toLoad.namespace, toLoad.closure);
         }
-    };
+    }
 
-    function getModule (leaf) {
-        return global.module.modules[leaf];
-    };
+    function getDependencies (closure) {
+        var dependencies = /\(([^)]*)/.exec(closure);
 
-    function getDependencies (module) {
-        var i,
-            params = /\(([^)]+)/.exec(module);
+        if (!dependencies || !dependencies[1]) { return []; }
 
-        if (!params[1]) { return []; }
+        return dependencies[1].split(/\s*,\s*/);
+    }
 
-        params = params[1].split(/\s*,\s*/);
-        
-        // get rid of the global param
-        params.shift();
+    function getModule (module) {
+        return global.modules[module];
+    }
 
-        return params;
-    };
-
-    function hasDependencies (namespace, module) {
-        global.module.unloaded.push({
+    function hasDependencies (namespace, closure) {
+        global.unloaded.push({
             namespace: namespace,
-            module: module
+            closure: closure
         });
-    };
+    }
 
 })(this);
