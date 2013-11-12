@@ -39,4 +39,4 @@ If you accidentally give two modules the same namespace, NamespaceJS will kindly
 
 A sample demonstration is included in this repository. You can run it by opening index.html in a web browser and reviewing the console.
 
-NamespaceJS is a mere 438 bytes minified.
+NamespaceJS is a mere 416 bytes minified.
