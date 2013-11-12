@@ -1,5 +1,7 @@
 (function (global) {
 
+    var unloading = false;
+
     global.module = function module (namespace, closure) {
         var args = [],
             dependencies,
@@ -41,7 +43,9 @@
         cacheModule(name, namespace, leaf);
 
         // any unloaded modules?
-        checkUnloaded();
+        if (!unloading) {
+            checkUnloaded();
+        }
     };
 
     global.modules = {};     // cached module set
@@ -65,22 +69,24 @@
 
         global.unloaded = [];
 
+        unloading = true;
         while (unloaded.length) {
             toLoad = unloaded.shift();
             global.module(toLoad.namespace, toLoad.closure);
         }
+        unloading = false;
     }
 
     function getDependencies (closure) {
         var dependencies = /\(([^)]*)/.exec(closure);
 
-        if (!dependencies || !dependencies[1]) { return []; }
+        if (!dependencies[1]) { return []; }
 
         return dependencies[1].split(/\s*,\s*/);
     }
 
-    function getModule (module) {
-        return global.modules[module];
+    function getModule (name) {
+        return global.modules[name];
     }
 
     function hasDependencies (namespace, closure) {
