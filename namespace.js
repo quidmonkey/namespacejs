@@ -1,8 +1,6 @@
 (function (global) {
 
-    var unloading = false;
-
-    global.module = function module (namespace, closure) {
+    module = function module (namespace, closure) {
         var args = [],
             dependencies,
             key,
@@ -43,38 +41,34 @@
         cacheModule(name, namespace, leaf);
 
         // any unloaded modules?
-        if (!unloading) {
-            checkUnloaded();
-        }
+        checkUnloaded();
     };
 
-    global.modules = {};     // cached module set
-    global.unloaded = [];    // modules with unloaded dependencies
+    modules = {};     // cached module set
+    unloaded = [];    // modules with unloaded dependencies
 
     function cacheModule (name, namespace, module) {
         // already cached?
-        if (global.modules[name]) {
+        if (modules[name]) {
             console.log(
                 '~~~~ namespacejs: Ruh roh. Potential namespace collision on \'' +
                 name + '\' for namespace \'' + namespace + '\''
             );
         } else {
-            global.modules[name] = module;
+            modules[name] = module;
         }
     }
 
     function checkUnloaded () {
         var toLoad,
-            unloaded = global.unloaded;
+            toUnload = unloaded;
 
-        global.unloaded = [];
+        unloaded = [];
 
-        unloading = true;
-        while (unloaded.length) {
-            toLoad = unloaded.shift();
-            global.module(toLoad.namespace, toLoad.closure);
+        while (toUnload.length) {
+            toLoad = toUnload.shift();
+            module(toLoad.namespace, toLoad.closure);
         }
-        unloading = false;
     }
 
     function getDependencies (closure) {
@@ -86,11 +80,11 @@
     }
 
     function getModule (name) {
-        return global.modules[name];
+        return modules[name];
     }
 
     function hasDependencies (namespace, closure) {
-        global.unloaded.push({
+        unloaded.push({
             namespace: namespace,
             closure: closure
         });
