@@ -41,4 +41,4 @@ A sample demonstration is included in this repository. You can run it by opening
 
 NamespaceJS is a mere 416 bytes minified.
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/7a49dc913bad05c0be16a49de4ebada4 "githalytics.com")](http://githalytics.com/quidmonkey/namespacejs)
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/20e24f332601aac16a37554432cdad67 "githalytics.com")](http://githalytics.com/quidmonkey/namespacejs)
