@@ -1,54 +1,43 @@
 (function (global) {
 
+    var unloaded = [];  // modules with unloaded dependencies
+
     module = function module () {
         var args = [],
             dependency,
             dependencies,
-            inject,
-            key,
             leaf,
-            name,
-            namespace = arguments[0];
+            namespace;
 
+        // parse overridden function signature
         if (arguments.length === 2) {
             closure = arguments[1];
             dependencies = [];
+            namespace = arguments[0];
         } else if (arguments.length === 3) {
             closure = arguments[2];
             dependencies = arguments[1];
+            namespace = arguments[0];
         } else {
-            throw new Error('~~~~ namespacejs: Unknown number of parameters given to module function');
+            closure = arguments[0].closure;
+            dependencies = arguments[0].dependencies;
+            namespace = arguments[0].namespace;
         }
 
         // create namespace
-        // while (tree.length) {
-        //     name = tree.shift();
+        leaf = getModule(namespace, true);
 
-        //     // is capitalized to conform to best practice of naming modules?
-        //     if (/[^A-Z]/.test(name[0])) {
-        //         console.log(
-        //             '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
-        //             name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
-        //         );
-        //     }
-
-        //     root = leaf;
-        //     leaf = root[name] = root[name] || {};
-        // }
-
-        leaf = getModule(namespace);
-        
+        // get dependencies
         while(dependencies.length) {
             dependency = getModule(dependencies.shift());
             if (isEmptyObject(dependency)) {
-                return hasDependencies(namespace, dependencies, closure);
+                return hasDependencies(closure, dependencies, namespace);
             }
             args.push(dependency);
         }
 
         // create module
         closure.apply(leaf, args);
-        // registerModule(name, namespace, leaf);
 
         // any unloaded modules?
         checkUnloaded();
@@ -58,10 +47,28 @@
     };
 
     registerModule = function registerModule (namespace, module) {
-        getModule(namespace) = module;
-    }
+        var leaf = global,
+            name,
+            tree = namespace.split(',');
 
-    unloaded = [];    // modules with unloaded dependencies
+        while (tree.length > 1) {
+            name = tree.shift();
+            leaf = root[name] || {};
+        }
+
+        name = tree.shift();
+
+        // namespace already registered?
+        if (leaf[name]) {
+            console.log(
+                '~~~~ namespacejs: Ruh roh. Namespace collision on \'' +
+                name + '\' in namespace \'' + namespace + '\'. Not registering module.'
+            );
+            return;
+        }
+
+        leaf[name] = module;
+    };
 
     function checkUnloaded () {
         var toUnload = unloaded;
@@ -69,26 +76,46 @@
         unloaded = [];
 
         while (toUnload.length) {
-            module.apply(global, toUnload.shift());
+            module.call(global, toUnload.shift());
         }
     }
 
-    function getModule (namespace) {
+    function getModule (namespace, warn) {
         var leaf = global,
+            name,
             tree = namespace.split(',');
 
         while (tree.length) {
-            leaf = leaf[tree.shift()] || {};
+            name = tree.shift();
+            leaf = leaf[name] || {};
+        }
+
+        // is capitalized to conform to best practice of naming modules?
+        if (warn) {
+            // namespace not following best practice?
+            if (/[^A-Z]/.test(name[0])) {
+                console.log(
+                    '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
+                    name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
+                );
+            }
+            // namespace in use?
+            if (!isEmptyObject(leaf)) {
+                console.log(
+                    '~~~~ namespacejs: Ruh roh. Potential namespace collision on \'' +
+                    name + '\' in namespace \'' + namespace + '\''
+                );
+            }
         }
 
         return leaf;
     }
 
-    function hasDependencies (namespace, dependencies, closure) {
+    function hasDependencies (closure, dependencies, namespace) {
         unloaded.push({
-            namespace: namespace,
+            closure: closure,
             dependencies: dependencies,
-            closure: closure
+            namespace: namespace
         });
     }
 

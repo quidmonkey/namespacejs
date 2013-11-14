@@ -1,4 +1,4 @@
-module('Foo.Bar', function (Foo) {
+module('Foo.Bar', ['Foo'], function (Foo) {
     var x = 2;
     this.x = 2;
     console.log('\n~~~~ Bar scope');
