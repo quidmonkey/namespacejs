@@ -1,11 +1,12 @@
 (function (global) {
 
-    var unloaded = [];  // modules with unloaded dependencies
+    unloaded = [];  // modules with unloaded dependencies
 
     module = function module () {
         var args = [],
             dependency,
             dependencies,
+            i = 0,
             leaf,
             namespace;
 
@@ -18,18 +19,26 @@
             closure = arguments[2];
             dependencies = arguments[1];
             namespace = arguments[0];
+            // console.log('~~~ With dependencies');
+            // console.log('closure', closure);
+            // console.log('dependencies', dependencies);
+            // console.log('namespace', namespace);
         } else {
             closure = arguments[0].closure;
             dependencies = arguments[0].dependencies;
             namespace = arguments[0].namespace;
+            // console.log('~~~ Trying to load unlaoded');
+            // console.log('closure', closure);
+            // console.log('dependencies', dependencies);
+            // console.log('namespace', namespace);
         }
 
         // create namespace
         leaf = getModule(namespace, true);
 
         // get dependencies
-        while(dependencies.length) {
-            dependency = getModule(dependencies.shift());
+        for (; i < dependencies.length; i++) {
+            dependency = getModule(dependencies[i]);
             if (isEmptyObject(dependency)) {
                 return hasDependencies(closure, dependencies, namespace);
             }
@@ -40,6 +49,9 @@
         closure.apply(leaf, args);
 
         // any unloaded modules?
+        if (namespace === 'Foo') {
+            debugger;
+        }
         checkUnloaded();
 
         // return our new module!
@@ -112,6 +124,9 @@
     }
 
     function hasDependencies (closure, dependencies, namespace) {
+        // console.log('~~~ hasDependencies');
+        // console.log('dependencies', dependencies);
+        // console.log('namespace', namespace);
         unloaded.push({
             closure: closure,
             dependencies: dependencies,
