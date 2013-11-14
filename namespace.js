@@ -1,93 +1,104 @@
 (function (global) {
 
-    module = function module (namespace, closure) {
+    module = function module () {
         var args = [],
+            dependency,
             dependencies,
+            inject,
             key,
-            leaf = global,
+            leaf,
             name,
-            required,
-            root,
-            tree = namespace.split('.');
+            namespace = arguments[0];
+
+        if (arguments.length === 2) {
+            closure = arguments[1];
+            dependencies = [];
+        } else if (arguments.length === 3) {
+            closure = arguments[2];
+            dependencies = arguments[1];
+        } else {
+            throw new Error('~~~~ namespacejs: Unknown number of parameters given to module function');
+        }
 
         // create namespace
-        while (tree.length) {
-            name = tree.shift();
+        // while (tree.length) {
+        //     name = tree.shift();
 
-            // is capitalized to conform to best practice of naming modules?
-            if (/[^A-Z]/.test(name[0])) {
-                console.log(
-                    '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
-                    name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
-                );
-            }
+        //     // is capitalized to conform to best practice of naming modules?
+        //     if (/[^A-Z]/.test(name[0])) {
+        //         console.log(
+        //             '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
+        //             name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
+        //         );
+        //     }
 
-            root = leaf;
-            leaf = root[name] = root[name] || {};
-        }
+        //     root = leaf;
+        //     leaf = root[name] = root[name] || {};
+        // }
+
+        leaf = getModule(namespace);
         
-        // get dependencies
-        dependencies = getDependencies(closure);
         while(dependencies.length) {
-            required = getModule(dependencies.shift());
-            if (!required) {
-                return hasDependencies(namespace, closure);
+            dependency = getModule(dependencies.shift());
+            if (isEmptyObject(dependency)) {
+                return hasDependencies(namespace, dependencies, closure);
             }
-            args.push(required);
+            args.push(dependency);
         }
 
         // create module
         closure.apply(leaf, args);
-        cacheModule(name, namespace, leaf);
+        // registerModule(name, namespace, leaf);
 
         // any unloaded modules?
         checkUnloaded();
+
+        // return our new module!
+        return leaf;
     };
 
-    modules = {};     // cached module set
-    unloaded = [];    // modules with unloaded dependencies
-
-    function cacheModule (name, namespace, module) {
-        // already cached?
-        if (modules[name]) {
-            console.log(
-                '~~~~ namespacejs: Ruh roh. Potential namespace collision on \'' +
-                name + '\' for namespace \'' + namespace + '\''
-            );
-        } else {
-            modules[name] = module;
-        }
+    registerModule = function registerModule (namespace, module) {
+        getModule(namespace) = module;
     }
 
+    unloaded = [];    // modules with unloaded dependencies
+
     function checkUnloaded () {
-        var toLoad,
-            toUnload = unloaded;
+        var toUnload = unloaded;
 
         unloaded = [];
 
         while (toUnload.length) {
-            toLoad = toUnload.shift();
-            module(toLoad.namespace, toLoad.closure);
+            module.apply(global, toUnload.shift());
         }
     }
 
-    function getDependencies (closure) {
-        var dependencies = /\(([^)]*)/.exec(closure);
+    function getModule (namespace) {
+        var leaf = global,
+            tree = namespace.split(',');
 
-        if (!dependencies[1]) { return []; }
+        while (tree.length) {
+            leaf = leaf[tree.shift()] || {};
+        }
 
-        return dependencies[1].split(/\s*,\s*/);
+        return leaf;
     }
 
-    function getModule (name) {
-        return modules[name];
-    }
-
-    function hasDependencies (namespace, closure) {
+    function hasDependencies (namespace, dependencies, closure) {
         unloaded.push({
             namespace: namespace,
+            dependencies: dependencies,
             closure: closure
         });
+    }
+
+    function isEmptyObject (obj) {
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 })(this);
