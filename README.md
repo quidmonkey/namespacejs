@@ -49,12 +49,19 @@ module('Foo.Bar', ['Foo'], function (Foo) {
 });
 ```
 
-This is the same Bar example as noted above, save that Foo is now being injected into Bar. When loading scripts, if Bar is encountered first, its load will be deferred until Foo is first loaded.
+This is the same Bar example as noted above, save that Foo is now being injected into Bar. When loading scripts, if Bar is encountered first, its load will be deferred until Foo is loaded. This will free up the need to manually monitor your script loading:
+
+```html
+<!-- NamespaceJS will load Bar after Foo, due to Bar having a dependency on Foo -->
+<!-- No need to worry about which order you list your scripts -->
+<script type="text/javascript" src="example/scripts/bar.js"></script>
+<script type="text/javascript" src="example/scripts/foo.js"></script>
+```
 
 You can inject as many dependencies as you like:
 
 ```javascript
-module('Foo.Bar.Baz', ['Foo', 'Foo.Bar'], function (Foo) {
+module('Foo.Bar.Baz', ['Foo', 'Foo.Bar'], function (Foo, Bar) {
     // code
 });
 ```
