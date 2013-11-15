@@ -9,25 +9,22 @@
             dependencies,
             i = 0,
             leaf,
-            namespace;
+            namespace,
+            params = Array.prototype.slice.call(arguments);
 
         // parse overridden function signature
-        if (arguments.length === 2) {
-            closure = arguments[1];
+        if (params.length === 2) {
+            closure = params[1];
             dependencies = [];
-            namespace = arguments[0];
-        } else if (arguments.length === 3) {
-            closure = arguments[2];
-            dependencies = arguments[1];
-            namespace = arguments[0];
+            namespace = params[0];
         } else {
-            closure = arguments[0].closure;
-            dependencies = arguments[0].dependencies;
-            namespace = arguments[0].namespace;
+            closure = params[2];
+            dependencies = params[1];
+            namespace = params[0];
         }
 
         // create namespace
-        leaf = createNamespace(namespace);
+        leaf = registerModule(namespace);
 
         // get dependencies
         for (; i < dependencies.length; i++) {
@@ -51,49 +48,13 @@
     registerModule = function registerModule (namespace, module) {
         var leaf = global,
             name,
-            tree = namespace.split('.');
-
-        while (tree.length > 1) {
-            name = tree.shift();
-            leaf = leaf[name] = leaf[name] || {};
-        }
-
-        name = tree.shift();
-
-        // namespace already registered?
-        if (leaf[name]) {
-            console.log(
-                '~~~~ namespacejs: Ruh roh. Namespace collision on \'' +
-                name + '\' in namespace \'' + namespace + '\'. Not registering module.'
-            );
-            return;
-        }
-
-        leaf[name] = module;
-    };
-
-    function cacheModule (namespace, module) {
-        modules[namespace] = module;
-    }
-
-    function checkUnloaded () {
-        var toUnload = unloaded;
-
-        unloaded = [];
-
-        while (toUnload.length) {
-            module.call(global, toUnload.shift());
-        }
-    }
-
-    function createNamespace (namespace) {
-        var leaf = global,
-            name,
+            root = global,
             tree = namespace.split('.');
 
         while (tree.length) {
             name = tree.shift();
-            leaf = leaf[name] = leaf[name] || {};
+            root = leaf;
+            leaf = root[name] = root[name] || {};
         }
 
         // namespace not following best practice?
@@ -104,7 +65,39 @@
             );
         }
 
+        // do we already have a module to register?
+        if (module) {
+            // namespace already registered?
+            if (root[name]) {
+                console.log(
+                    '~~~~ namespacejs: Ruh roh. Namespace collision on \'' +
+                    name + '\' in namespace \'' + namespace + '\'. Not registering module.'
+                );
+            } else {
+                root[name] = module;
+            }
+
+            return module;
+        }
+
+        // no module, so return a reference to the namespace!
         return leaf;
+    };
+
+    function cacheModule (namespace, module) {
+        modules[namespace] = module;
+    }
+
+    function checkUnloaded () {
+        var current,
+            toLoad = unloaded;
+
+        unloaded = [];
+
+        while (toLoad.length) {
+            current = toLoad.shift();
+            module.call(global, current.namespace, current.dependencies, current.closure);
+        }
     }
 
     function getModule (namespace) {
