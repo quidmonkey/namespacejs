@@ -23,7 +23,7 @@ module('Foo.Bar', function (global, parent) {
 });
 ```
 
-This hangs an object named foo off of the global scope, which has a sub-object named Bar hanging off of Foo. Both the global scope and the parent namesapce are once again passed in. In this case, global references the global scope, while parent references Foo.
+This hangs an object named Foo off of the global scope, which has a sub-object named Bar hanging off of Foo. Both the global scope and the parent namesapce are once again passed in. In this case, global references the global scope, while parent references Foo.
 
 You can namespace things as far down as you like, and NamespaceJS will create the intermediary leaf as it traverses the tree to the desired namespace:
 
@@ -39,6 +39,6 @@ If you accidentally give two modules the same namespace, NamespaceJS will kindly
 
 A sample demonstration is included in this repository. You can run it by opening index.html in a web browser and reviewing the console.
 
-NamespaceJS is a mere 416 bytes minified.
+NamespaceJS is a mere 410 bytes minified.
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/20e24f332601aac16a37554432cdad67 "githalytics.com")](http://githalytics.com/quidmonkey/namespacejs)
