@@ -3,7 +3,7 @@ NamespaceJS
 
 UMD, CommonJS, NodeJS and ES6 module systems all are exhaustive solutions to a simple problem. At its core, modulization is an object tree, constructed of leaves, each of which encapsulates a section of code.
 
-NamespaceJS aims to be a simple solution: it is neither thorough nor opinionated. It lets third-party solutions do their thing, while you worry about managing your own code branch.
+NamespaceJS aims to be a simple solution: it is neither thorough nor opinionated. It lets third-party solutions do their thing, while you worry about managing your own code branch. It is a mere 615 bytes minified.
 
 To define a module, all you must do is give it a namespace and your closed-over code:
 
@@ -36,6 +36,8 @@ module('I.Am.An.Arbitrary.Namespace', function () {
 This creates a namespace branch 5 layers deep, and all 4 intermediary namespaces (I, Am, An and Arbitrary) will be created as empty objects.
 
 If you accidentally give two modules the same namespace, NamespaceJS will kindly inform you of the conflict by logging a warning. In addition, if a namespace is not capitalized, NamespaceJS will kindly inform you so that you can conform to the best practice of capitalizing your modules, and thereby, avoid naming collisions.
+
+A sample demonstration is included in this repository. You can run it by opening index.html in a web browser and reviewing the console.
 
 ## Dependency Injection
 
@@ -80,9 +82,3 @@ module('Foo', ['$'], function ($) {
 * `module(string, function)` - String specifies a namespace, function a closure.
 * `module(string, array, function)` - String specifies a namespace, array a list of strings which are dependencies to be injected, function a closure.
 * `registerModule(string, object)` - String specifies a namespace, object a module (or library) to store on the namespace.
-
-## Notes
-
-A sample demonstration is included in this repository. You can run it by opening index.html in a web browser and reviewing the console.
-
-NamespaceJS is a mere 615 bytes minified.
