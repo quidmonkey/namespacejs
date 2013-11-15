@@ -10,7 +10,7 @@
             i = 0,
             leaf,
             namespace,
-            params = Array.prototype.slice.call(arguments);
+            params = arguments;
 
         // parse overridden function signature
         if (params.length === 2) {
@@ -75,6 +75,11 @@
                 );
             } else {
                 root[name] = module;
+
+                // whenever a new module is added
+                // check to see if another module
+                // lists it as a dependency
+                checkUnloaded();
             }
 
             return module;
