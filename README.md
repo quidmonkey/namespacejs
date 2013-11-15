@@ -37,7 +37,7 @@ This creates a namespace branch 5 layers deep, and all 4 intermediary namespaces
 
 If you accidentally give two modules the same namespace, NamespaceJS will kindly inform you of the conflict by logging a warning. In addition, if a namespace is not capitalized, NamespaceJS will kindly inform you so that you can conform to the best practice of capitalizing your modules, and thereby, avoid naming collisions.
 
-### Dependency Injection
+## Dependency Injection
 
 A module system is not complete without a dependency injection system. NamespaceJS features a simple dependency injection solution that loads module as specified dependencies become available:
 
@@ -59,7 +59,7 @@ module('Foo.Bar.Baz', ['Foo', 'Foo.Bar'], function (Foo) {
 
 Here, both Foo and Bar will be injected into Baz.
 
-### Third Party Modules
+## Third Party Modules
 
 Third party libraries can be registered like so:
 
@@ -75,12 +75,14 @@ module('Foo', ['$'], function ($) {
 });
 ```
 
-### API
+## API
 
-* module(string, function) - String specifies a namespace, function a closure.
-* module(string, array, function) - String specifies a namespace, array a list of strings which are dependencies to be injected, function a closure.
-* registerModule(string, object) - String specifies a namespace, object a module (or library) to store on the namespace.
+* `module(string, function)` - String specifies a namespace, function a closure.
+* `module(string, array, function)` - String specifies a namespace, array a list of strings which are dependencies to be injected, function a closure.
+* `registerModule(string, object)` - String specifies a namespace, object a module (or library) to store on the namespace.
+
+## Notes
 
 A sample demonstration is included in this repository. You can run it by opening index.html in a web browser and reviewing the console.
 
-NamespaceJS is a mere 438 bytes minified.
+NamespaceJS is a mere 615 bytes minified.
