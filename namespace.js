@@ -74,7 +74,7 @@
                 );
             } else {
                 root[name] = module;
-
+                removeGlobal(module);
                 checkUnloaded();
             }
 
@@ -115,6 +115,16 @@
             dependencies: dependencies,
             namespace: namespace
         });
+    }
+
+    function removeGlobal (obj) {
+        for (var key in global) {
+            if (global.hasOwnProperty(key)) {
+                if (global[key] === obj) {
+                    delete global[key];
+                }
+            }
+        }
     }
 
 })(this);
