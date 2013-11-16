@@ -1,103 +1,10 @@
-(function (global) {
+(function (global) {'use strict'
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // private
+
     var unloaded = [],  // modules with unloaded dependencies
         modules = {};   // cached module set
-
-
-    getModule = function getModule (namespace) {
-        return modules[namespace];
-    };
-
-    module = function module () {
-        var args = arguments,
-            dependencies,
-            i = 0,
-            leaf,
-            namespace,
-            params = [],
-            toInject;
-
-        // parse overridden function signature
-        if (args.length === 2) {
-            closure = args[1];
-            dependencies = [];
-            namespace = args[0];
-        } else {
-            closure = args[2];
-            dependencies = args[1];
-            namespace = args[0];
-        }
-
-        // create namespace
-        leaf = registerModule(namespace);
-
-        // get dependencies
-        for (; i < dependencies.length; i++) {
-            toInject = getModule(dependencies[i]);
-
-            // is dependency unloaded?
-            if (!toInject) {
-                if (isCircularDependency(namespace, dependencies[i])) {
-                    throw new Error('~~~~ namespacejs: Ruh roh. Unable to load \'' + namespace +
-                        '\' because it has a circular dependency on \'' + dependencies[i] + '\''
-                    );
-                }
-                return hasUnloadedDependencies(closure, dependencies, namespace);
-            }
-
-            params.push(toInject.module);
-        }
-
-        // create module
-        closure.apply(leaf, params);
-        cacheModule(namespace, leaf, dependencies);
-
-        checkUnloaded();
-
-        // return our new module!
-        return leaf;
-    };
-
-    registerModule = function registerModule (namespace, module) {
-        var leaf = global,
-            name,
-            root = global,
-            tree = namespace.split('.');
-
-        while (tree.length) {
-            name = tree.shift();
-            root = leaf;
-            leaf = root[name] = root[name] || {};
-        }
-
-        // namespace not following best practice?
-        if (/[^A-Z]/.test(name[0])) {
-            console.log(
-                '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
-                name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
-            );
-        }
-
-        // do we already have a module to register?
-        if (module) {
-            // namespace already registered?
-            if (root[name]) {
-                console.log(
-                    '~~~~ namespacejs: Ruh roh. Namespace collision on \'' +
-                    name + '\' in namespace \'' + namespace + '\'. Not registering module.'
-                );
-            } else {
-                root[name] = module;
-                removeGlobal(module);
-                cacheModule(namespace, module);
-                checkUnloaded();
-            }
-
-            return module;
-        }
-
-        // no module, so return a reference to the namespace!
-        return leaf;
-    };
 
     function cacheModule (namespace, module, dependencies) {
         modules[namespace] = {
@@ -154,5 +61,114 @@
             }
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // public
+
+    global.debugUnloaded = function debugUnloaded () {
+        console.log('~~~~ namespacejs: Debug Mode - Unloaded Modules');
+        for (var i = 0; i < unloaded.length; i++) {
+            console.log((i + 1) + ') ' + unloaded[i].namespace);
+        }
+    };
+
+    global.getModule = function getModule (namespace) {
+        return modules[namespace];
+    };
+
+    global.module = function module () {
+        var args = arguments,
+            closure,
+            dependencies,
+            i = 0,
+            leaf,
+            namespace,
+            params = [],
+            toInject;
+
+        // parse overridden function signature
+        if (args.length === 2) {
+            closure = args[1];
+            dependencies = [];
+            namespace = args[0];
+        } else {
+            closure = args[2];
+            dependencies = args[1];
+            namespace = args[0];
+        }
+
+        // create namespace
+        leaf = registerModule(namespace);
+
+        // get dependencies
+        for (; i < dependencies.length; i++) {
+            toInject = getModule(dependencies[i]);
+
+            // is dependency unloaded?
+            if (!toInject) {
+                if (isCircularDependency(namespace, dependencies[i])) {
+                    throw new Error('~~~~ namespacejs: Ruh roh. Unable to load \'' + namespace +
+                        '\' because it has a circular dependency on \'' + dependencies[i] + '\''
+                    );
+                }
+                return hasUnloadedDependencies(closure, dependencies, namespace);
+            }
+
+            params.push(toInject.module);
+        }
+
+        // create module
+        closure.apply(leaf, params);
+        cacheModule(namespace, leaf, dependencies);
+
+        checkUnloaded();
+
+        // return our new module!
+        return leaf;
+    };
+
+    global.registerModule = function registerModule (namespace, module) {
+        var leaf = global,
+            name,
+            root = global,
+            tree = namespace.split('.');
+
+        if (module) {
+            if (getModule(namespace)) {
+                console.log(
+                    '~~~~ namespacejs: Ruh roh. Namespace collision on \'' + namespace +
+                    '\'. Not registering module.'
+                );
+                return;
+            }
+        }
+
+        while (tree.length) {
+            name = tree.shift();
+            root = leaf;
+            leaf = root[name] = root[name] || {};
+        }
+
+        // namespace not following best practice?
+        if (/[^A-Z|^$|^_]/.test(name[0])) {
+            console.log(
+                '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
+                name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
+            );
+        }
+
+        // do we already have a module to register?
+        if (module) {
+            root[name] = module;
+            removeGlobal(module);
+            cacheModule(namespace, module);
+            checkUnloaded();
+
+            return module;
+        }
+
+        // no module, so return a reference to the namespace!
+        return leaf;
+    };
 
 })(this);

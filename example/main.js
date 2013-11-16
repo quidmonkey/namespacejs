@@ -22,6 +22,12 @@ console.log('Namespace:', this.I.Am.An.Arbitrary.Namespace);
 console.log('bad:', this.bad);
 console.log('practice:', this.bad.practice);
 
+console.log('\nRegistering Third Party Modules');
+registerModule('Foo.$', $);
+console.log('Is $ undefined? ' + (typeof $ === 'undefined'));
+console.log('Foo.$:', Foo.$);
+
+
 console.log('\n~~~~ Errors');
 module('Namespace.One', ['Namespace.Two'], function (namespaceTwo) {});
 module('Namespace.Two', ['Namespace.One'], function (namespaceOne) {});
