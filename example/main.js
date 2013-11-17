@@ -3,6 +3,11 @@ module('I.Am.An.Arbitrary.Namespace', ['Foo.Bar.Baz'], function (Baz) {
     console.log('I can haz Baz?', Baz);
 });
 
+console.log('\nRegistering Third Party Modules');
+registerModule('Foo.$', $);
+console.log('Is $ undefined? ' + (typeof $ === 'undefined'));
+console.log('Foo.$:', Foo.$);
+
 console.log('\n~~~~ Warnings');
 module('bad.practice', function () {}); // generate non-capitalized warning
 module('Foo.Bar.Baz', function () {});  // generate conflict warning
@@ -21,12 +26,6 @@ console.log('Arbitrary:', this.I.Am.An.Arbitrary);
 console.log('Namespace:', this.I.Am.An.Arbitrary.Namespace);
 console.log('bad:', this.bad);
 console.log('practice:', this.bad.practice);
-
-console.log('\nRegistering Third Party Modules');
-registerModule('Foo.$', $);
-console.log('Is $ undefined? ' + (typeof $ === 'undefined'));
-console.log('Foo.$:', Foo.$);
-
 
 console.log('\n~~~~ Errors');
 module('Namespace.One', ['Namespace.Two'], function (namespaceTwo) {});

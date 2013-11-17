@@ -65,10 +65,13 @@
     ///////////////////////////////////////////////////////////////////////////////////
     // public
 
-    global.debugUnloaded = function debugUnloaded () {
+    global.debugNamespaces = function debugNamespace () {
         console.log('~~~~ namespacejs: Debug Mode - Unloaded Modules');
         for (var i = 0; i < unloaded.length; i++) {
-            console.log((i + 1) + ') ' + unloaded[i].namespace);
+            console.log(
+                (i + 1) + ') Namespace: ' + unloaded[i].namespace +
+                ' with Dependencies: ' + unloaded[i].dependencies.toString()
+            );
         }
     };
 
