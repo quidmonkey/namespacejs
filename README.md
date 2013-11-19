@@ -3,7 +3,7 @@ NamespaceJS
 
 UMD, CommonJS, NodeJS and ES6 module systems all are exhaustive solutions to a simple problem. At its core, modulization is an object tree, constructed of leaves, each of which encapsulates a section of code.
 
-NamespaceJS aims to be a simple solution: it is neither thorough nor opinionated. It lets third-party solutions do their thing, while you worry about managing your own code branch. It is a mere 1278 bytes minified (739 bytes gzipped).
+NamespaceJS aims to be a simple solution: it is neither thorough nor opinionated. It lets third-party solutions do their thing, while you worry about managing your own code branch. It is a mere 1287 bytes minified (743 bytes gzipped).
 
 To define a module, all you must do is give it a namespace and your closed-over code:
 
