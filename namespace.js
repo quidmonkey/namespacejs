@@ -163,7 +163,7 @@
         // do we already have a module to register?
         if (module) {
             root[name] = module;
-            removeGlobal(module);
+            if (root !== global) { removeGlobal(module); }
             cacheModule(namespace, module);
             checkUnloaded();
 
