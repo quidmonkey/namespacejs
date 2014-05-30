@@ -100,9 +100,6 @@
             namespace = args[0];
         }
 
-        // create namespace
-        leaf = registerModule(namespace);
-
         // get dependencies
         for (; i < dependencies.length; i++) {
             toInject = getModule(dependencies[i]);
@@ -121,7 +118,11 @@
         }
 
         // create module
-        closure.apply(leaf, params);
+        leaf = closure.apply(global, params);
+
+        // create namespace
+        registerModule(namespace, leaf);
+
         cacheModule(namespace, leaf, dependencies);
 
         checkUnloaded();
@@ -163,10 +164,6 @@
         // do we already have a module to register?
         if (module) {
             root[name] = module;
-            if (root !== global) { removeGlobal(module); }
-            cacheModule(namespace, module);
-            checkUnloaded();
-
             return module;
         }
 
