@@ -1,0 +1,36 @@
+{
+  "name": "namespacejs",
+  "version": "1.1.0",
+  "description": "A Lightweight JavaScript Module System",
+  "main": "namespace.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "doc": "gulp docs",
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quidmonkey/namespacejs.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "Modules"
+  ],
+  "author": "Abraham Walters <abrahampeterwalters@gmail.com> (http://ninjaspankpants.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quidmonkey/namespacejs/issues"
+  },
+  "homepage": "https://github.com/quidmonkey/namespacejs",
+  "devDependencies": {
+    "gulp": "^3.8.9",
+    "gulp-bump": "^0.1.11",
+    "gulp-docco": "0.0.4",
+    "gulp-jasmine": "^1.0.1",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.0.1"
+  }
+}
