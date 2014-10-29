@@ -30,9 +30,15 @@ gulp.task('bump', function(){
              .pipe(gulp.dest('.'));
 });
 
-gulp.task('test', function() {
-  var jasmine = require('gulp-jasmine');
-
-  return gulp.src('tests.js')
-             .pipe(jasmine());
+gulp.task('test', function (done) {
+  var argv = require('yargs').argv;
+  var karma = require('karma').server;
+  
+  karma.start({
+    files: ['namespace.js', 'spec.js'],
+    singleRun: !argv.keepalive,
+    browsers: ['PhantomJS'],
+    reporters: ['spec'],
+    frameworks: ['jasmine']
+  }, done);
 });

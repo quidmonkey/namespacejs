@@ -52,6 +52,46 @@
         return false;
     }
 
+    function registerModule (namespace, module) {
+        var leaf = global,
+            name,
+            root = global,
+            tree = namespace.split('.');
+
+        if (module) {
+            if (getModule(namespace)) {
+                console.log(
+                    '~~~~ namespacejs: Ruh roh. Namespace collision on \'' + namespace +
+                    '\'. Not registering module.'
+                );
+                return;
+            }
+        }
+
+        while (tree.length) {
+            name = tree.shift();
+            root = leaf;
+            leaf = root[name] = root[name] || {};
+        }
+
+        // namespace not following best practice?
+        if (/[^A-Z|^$|^_]/.test(name[0])) {
+            console.log(
+                '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
+                name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
+            );
+        }
+
+        // do we already have a module to register?
+        if (module) {
+            root[name] = module;
+            return module;
+        }
+
+        // no module, so return a reference to the namespace!
+        return leaf;
+    }
+
     function removeGlobal (obj) {
         for (var key in global) {
             if (global.hasOwnProperty(key)) {
@@ -67,12 +107,15 @@
 
     global.debugNamespaces = function debugNamespace () {
         console.log('~~~~ namespacejs: Debug Mode - Unloaded Modules');
+
         for (var i = 0; i < unloaded.length; i++) {
             console.log(
                 (i + 1) + ') Namespace: ' + unloaded[i].namespace +
                 ' with Dependencies: ' + unloaded[i].dependencies.toString()
             );
         }
+
+        return unloaded;
     };
 
     global.getModule = function getModule (namespace) {
@@ -131,44 +174,9 @@
         return leaf;
     };
 
-    global.registerModule = function registerModule (namespace, module) {
-        var leaf = global,
-            name,
-            root = global,
-            tree = namespace.split('.');
-
-        if (module) {
-            if (getModule(namespace)) {
-                console.log(
-                    '~~~~ namespacejs: Ruh roh. Namespace collision on \'' + namespace +
-                    '\'. Not registering module.'
-                );
-                return;
-            }
-        }
-
-        while (tree.length) {
-            name = tree.shift();
-            root = leaf;
-            leaf = root[name] = root[name] || {};
-        }
-
-        // namespace not following best practice?
-        if (/[^A-Z|^$|^_]/.test(name[0])) {
-            console.log(
-                '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
-                name + '\' in namespace \'' + namespace + '\' to avoid naming collisions.'
-            );
-        }
-
-        // do we already have a module to register?
-        if (module) {
-            root[name] = module;
-            return module;
-        }
-
-        // no module, so return a reference to the namespace!
-        return leaf;
+    global.registerLibrary = function registerLibrary (namespace, module) {
+        removeGlobal(module);
+        return registerModule(namespace, module);
     };
 
 })(this);
