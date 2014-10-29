@@ -73,6 +73,15 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
     expect('$' in window).toBeFalsy();
   });
 
+  it('should not remove registered library from the global scope if being namespaced to the global scope', function () {
+    window.$ = function mockjQuery () {};
+
+    expect('$' in window).toBeTruthy();
+    registerLibrary('myJquery', $);
+    expect('myJquery' in window).toBeTruthy();
+    expect('$' in window).toBeTruthy();
+  });
+
   it('should debug namespaces', function () {
     var mockDebug = { closure: mocks.baz, dependencies: ['Qux'], namespace: 'Baz' };
 

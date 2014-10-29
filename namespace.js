@@ -178,7 +178,10 @@
   };
 
   global.registerLibrary = function registerLibrary (namespace, module) {
-    removeGlobal(module);
+    // is the target namespace not the global scope?
+    if (/\./.test(namespace)) {
+      removeGlobal(module);
+    }
     return registerModule(namespace, module);
   };
 
