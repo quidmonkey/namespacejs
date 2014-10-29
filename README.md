@@ -5,7 +5,7 @@ UMD, CommonJS, NodeJS and ES6 module systems all are exhaustive solutions to a s
 
 NamespaceJS aims to be a simple solution: it is neither thorough nor opinionated. It lets third-party solutions do their thing, while you worry about managing your own code branch.
 
-NamespaceJS is not a script loader, but a client-side module system. It does not require a compilation step, nor any sort of shim to work; and it uglifies just fine.
+NamespaceJS is not a script loader, but a client-side module system. It does not require a compilation step, a polyfill, or any sort of shim to work; and it uglifies just fine.
 
 ## Defining a Module
 
