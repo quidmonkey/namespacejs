@@ -5,6 +5,10 @@ UMD, CommonJS, NodeJS and ES6 module systems all are exhaustive solutions to a s
 
 NamespaceJS aims to be a simple solution: it is neither thorough nor opinionated. It lets third-party solutions do their thing, while you worry about managing your own code branch.
 
+NamespaceJS is not a script loader, but a client-side module system. It does not require a compilation step, nor any sort of shim to work; and it uglifies just fine.
+
+## Defining a Module
+
 To define a module, all you must do is give it a namespace and your closed-over code:
 
 ```javascript
@@ -50,7 +54,7 @@ var FooClass = module('Foo', function () {
 var fooInstance = new FooClass();
 ```
 
-A sample demonstration is included in this repository. You can run it by opening index.html in a web browser and reviewing the console.
+Several mocked examples are include in the mocks.js file.
 
 ## Dependency Injection
 
@@ -81,6 +85,8 @@ module('Foo.Bar.Baz', ['Foo', 'Foo.Bar'], function (Foo, Bar) {
 
 Here, both Foo and Bar will be injected into Baz.
 
+## Circular Dependencies
+
 It is important to avoid circular dependencies:
 
 ```javascript
@@ -95,7 +101,7 @@ Here Namespace.One is requiring Namespace.Two and vice versa, each preventing th
 Third party libraries can be registered like so:
 
 ```javascript
-registerModule('$', $);
+registerLibrary('$', $);
 ```
 
 These libraries can then be injected like any other module:
@@ -114,7 +120,7 @@ If a third party module is namespaced somewhere other than the global scope, it 
 * `getModule(string)` - String specifies a namespace. Gets the module at the given namespace.
 * `module(string, function)` - String specifies a namespace, function a closure. Creates a module on the given namespace using the closed over code block. Returns any return value from the closed over code block.
 * `module(string, array, function)` - String specifies a namespace, array a list of strings which are dependencies to be injected, function a closure. Creates a module on the given namespace using the closed over code block and injecting the given dependencies into the closure.
-* `registerModule(string, object)` - String specifies a namespace, object a module (or library) to store on the namespace. Registers an object on the given namespace. Useful for namespacing third party libraries.
+* `registerLibrary(string, object)` - String specifies a namespace, object a module (or library) to store on the namespace. Registers an object on the given namespace. This will attempt to remove the library from the global scope. Useful for namespacing third party libraries.
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/20e24f332601aac16a37554432cdad67 "githalytics.com")](http://githalytics.com/quidmonkey/namespacejs)
 
