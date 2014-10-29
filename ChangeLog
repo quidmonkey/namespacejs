@@ -3,6 +3,8 @@
     * Added gulpfile for building, testing and documentation.
     * Added unit testing with Jasmine
     * Removed the registerModule from api and exposed registerLibrary for registering third party libraries
+    * Added TravisCI integration
+    * Added changelog and gitignore
 
 2013-11-19: Version 1.0.0
 

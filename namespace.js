@@ -1,4 +1,4 @@
-(function (global) {'use strict'
+(function (global) {'use strict';
 
     ///////////////////////////////////////////////////////////////////////////////////
     // private
@@ -38,12 +38,12 @@
     }
 
     function isCircularDependency (namespace, dependency) {
-        var i = 0,
+        var i,
             len = unloaded.length;
 
         // does an unloaded module have the namespace
         // listed as a dependency?
-        for (; i < len; i++) {
+        for (i = 0; i < len; i++) {
             if (unloaded[i].namespace === dependency) {
                 return unloaded[i].dependencies.indexOf(namespace) !== -1;
             }
@@ -93,7 +93,9 @@
     }
 
     function removeGlobal (obj) {
-        for (var key in global) {
+        var key;
+
+        for (key in global) {
             if (global.hasOwnProperty(key)) {
                 if (global[key] === obj) {
                     delete global[key];
@@ -108,7 +110,9 @@
     global.debugNamespaces = function debugNamespace () {
         console.log('~~~~ namespacejs: Debug Mode - Unloaded Modules');
 
-        for (var i = 0; i < unloaded.length; i++) {
+        var i;
+
+        for (i = 0; i < unloaded.length; i++) {
             console.log(
                 (i + 1) + ') Namespace: ' + unloaded[i].namespace +
                 ' with Dependencies: ' + unloaded[i].dependencies.toString()
@@ -126,7 +130,7 @@
         var args = arguments,
             closure,
             dependencies,
-            i = 0,
+            i,
             leaf,
             namespace,
             params = [],
@@ -143,8 +147,7 @@
             namespace = args[0];
         }
 
-        // get dependencies
-        for (; i < dependencies.length; i++) {
+        for (i = 0; i < dependencies.length; i++) {
             toInject = getModule(dependencies[i]);
 
             // is dependency unloaded?
