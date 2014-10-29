@@ -1,8 +1,7 @@
 var gulp = require('gulp');
 
 gulp.task('default', ['build']);
-
-gulp.task('build', ['test', 'minify', 'docs', 'bump']);
+gulp.task('build', ['test', 'minify', 'docs']);
 
 gulp.task('minify', function () {
   var uglify = require('gulp-uglify'),
@@ -20,14 +19,6 @@ gulp.task('docs', function () {
   return gulp.src('namespace.js')
              .pipe(docco())
              .pipe(gulp.dest('docs'));
-});
-
-gulp.task('bump', function(){
-  var bump = require('gulp-bump');
-
-  return gulp.src(['package.json'])
-             .pipe(bump())
-             .pipe(gulp.dest('.'));
 });
 
 gulp.task('test', function (done) {
