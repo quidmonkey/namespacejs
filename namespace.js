@@ -1,11 +1,27 @@
+/* ========================================================================
+ * NamespaceJS v1.1.0
+ * A Lightweight JavaScript Client-Side Module System
+ *
+ * Copyright (c) 2013 Abraham Walters (ninjaspankypants.com)
+ * https://github.com/quidmonkey/namespacejs
+ *
+ * Author: Abraham Walters
+ * Website: http://ninjaspankypants.com/
+ *
+ * Released under the MIT license
+ * https://github.com/quidmonkey/namespacejs/blob/master/LICENSE
+ * ------------------------------------------------------------------------ */
+
 (function (global) {'use strict';
 
-  ///////////////////////////////////////////////////////////////////////////////////
-  // private
+  /*****************************
+   * private
+   *****************************/
 
-  var unloaded = [],  // modules with unloaded dependencies
-    modules = {};   // cached module set
+  var unloaded = [],    // modules with unloaded dependencies
+      modules = {};     // cached module set
 
+  // Save module to the stack
   function cacheModule (namespace, module, dependencies) {
     modules[namespace] = {
       dependencies: dependencies || [],
@@ -13,13 +29,13 @@
     };
   }
 
-  // whenever a new module is added
+  // Whenever a new module is added,
   // check to see if another module
   // which lists it as a dependency
   // can now be loaded
   function checkUnloaded () {
     var current,
-      toLoad = unloaded;
+        toLoad = unloaded;
 
     unloaded = [];
 
@@ -29,6 +45,10 @@
     }
   }
 
+  // This module can't be loaded due to
+  // it having unloaded dependencies. So
+  // save a copy of it for now to be loaded
+  // at a later time.
   function hasUnloadedDependencies (closure, dependencies, namespace) {
     unloaded.push({
       closure: closure,
@@ -37,12 +57,12 @@
     });
   }
 
+  // Does this module require a module which also
+  // requires it?
   function isCircularDependency (namespace, dependency) {
     var i,
       len = unloaded.length;
 
-    // does an unloaded module have the namespace
-    // listed as a dependency?
     for (i = 0; i < len; i++) {
       if (unloaded[i].namespace === dependency) {
         return unloaded[i].dependencies.indexOf(namespace) !== -1;
@@ -52,11 +72,12 @@
     return false;
   }
 
+  // Create a given module!
   function registerModule (namespace, module) {
     var leaf = global,
-      name,
-      root = global,
-      tree = namespace.split('.');
+        name,
+        root = global,
+        tree = namespace.split('.');
 
     if (module) {
       if (getModule(namespace)) {
@@ -74,7 +95,7 @@
       leaf = root[name] = root[name] || {};
     }
 
-    // namespace not following best practice?
+    // Is this namespace not following best practice?
     if (/[^A-Z|^$|^_]/.test(name[0])) {
       console.log(
         '~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'' +
@@ -82,16 +103,18 @@
       );
     }
 
-    // do we already have a module to register?
+    // Do we already have a module to register?
     if (module) {
       root[name] = module;
       return module;
     }
 
-    // no module, so return a reference to the namespace!
+    // No module is defined, so return a reference to the namespace!
     return leaf;
   }
 
+  // Attempt to remove a given module
+  // from the global scope.
   function removeGlobal (obj) {
     var key;
 
@@ -104,9 +127,12 @@
     }
   }
 
-  ///////////////////////////////////////////////////////////////////////////////////
-  // public
+  /*****************************
+   * public
+   *****************************/
 
+  // Log out and return the list of unloaded modules.
+  // This is useful for debugging why a module did not load.
   global.debugNamespaces = function debugNamespace () {
     console.log('~~~~ namespacejs: Debug Mode - Unloaded Modules');
 
@@ -122,21 +148,23 @@
     return unloaded;
   };
 
+  // Get a module from the cache given its namespace.
   global.getModule = function getModule (namespace) {
     return modules[namespace];
   };
 
+  // Core method which defines a module and a namespace.
   global.module = function module () {
     var args = arguments,
-      closure,
-      dependencies,
-      i,
-      leaf,
-      namespace,
-      params = [],
-      toInject;
+        closure,
+        dependencies,
+        i,
+        leaf,
+        namespace,
+        params = [],
+        toInject;
 
-    // parse overridden function signature
+    // Parse overridden function signature.
     if (args.length === 2) {
       closure = args[1];
       dependencies = [];
@@ -150,7 +178,7 @@
     for (i = 0; i < dependencies.length; i++) {
       toInject = getModule(dependencies[i]);
 
-      // is dependency unloaded?
+      // Is this dependency not loaded?
       if (!toInject) {
         if (isCircularDependency(namespace, dependencies[i])) {
           throw new Error('~~~~ namespacejs: Ruh roh. Unable to load \'' + namespace +
@@ -163,22 +191,24 @@
       params.push(toInject.module);
     }
 
-    // create module
+    // Create module
     leaf = closure.apply(global, params);
 
-    // create namespace
+    // Create namespace
     registerModule(namespace, leaf);
 
     cacheModule(namespace, leaf, dependencies);
 
+    // See if any other modules can now be loaded
+    // now that this module has been loaded.
     checkUnloaded();
 
-    // return our new module!
+    // Return our new module!
     return leaf;
   };
 
   global.registerLibrary = function registerLibrary (namespace, module) {
-    // is the target namespace not the global scope?
+    // Is the target namespace not the global scope?
     if (/\./.test(namespace)) {
       removeGlobal(module);
     }
