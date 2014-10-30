@@ -40,6 +40,10 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
     expect(mocks.foo).toHaveBeenCalled();
   });
 
+  it('should retrieve a namespace from the hash', function () {
+    expect(getModule('Namespace')).toEqual({ dependencies : [], module : { x : 1 } });
+  });
+
   it('should create a sub-namespace', function () {
     module('Namespace.SubNamespace', mocks.foo);
     expect('Namespace' in window).toBeTruthy();
