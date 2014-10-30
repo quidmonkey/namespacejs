@@ -19,6 +19,11 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
     expect(debugNamespaces).toEqual(jasmine.any(Function));
   });
 
+  it('should define a global deleteModule function', function () {
+    expect('deleteModule' in window).toBeTruthy();
+    expect(deleteModule).toEqual(jasmine.any(Function));
+  });
+
   it('should define a global getModule function', function () {
     expect('getModule' in window).toBeTruthy();
     expect(getModule).toEqual(jasmine.any(Function));

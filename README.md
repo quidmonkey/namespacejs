@@ -119,6 +119,7 @@ If a third party module is namespaced somewhere other than the global scope, it 
 ## API
 
 * `debugNamespaces()` - Prints out a list of any unloaded dependencies. Useful for debugging.
+* `deleteModule(string)` - String specifies a namespace. Deletes the module from the hash.
 * `getModule(string)` - String specifies a namespace. Gets the module at the given namespace.
 * `module(string, function)` - String specifies a namespace, function a closure. Creates a module on the given namespace using the closed over code block. Returns any return value from the closed over code block.
 * `module(string, array, function)` - String specifies a namespace, array a list of strings which are dependencies to be injected, function a closure. Creates a module on the given namespace using the closed over code block and injecting the given dependencies into the closure.

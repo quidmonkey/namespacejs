@@ -148,6 +148,10 @@
     return unloaded;
   };
 
+  global.deleteModule = function deleteModule (namespace) {
+    delete modules[namespace];
+  };
+
   // Get a module from the cache given its namespace.
   global.getModule = function getModule (namespace) {
     return modules[namespace];
