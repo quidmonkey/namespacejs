@@ -41,7 +41,7 @@
 
     while (toLoad.length) {
       current = toLoad.shift();
-      module.call(global, current.namespace, current.dependencies, current.closure);
+      namespace.call(global, current.namespace, current.dependencies, current.closure);
     }
   }
 
@@ -80,7 +80,7 @@
         tree = namespace.split('.');
 
     if (module) {
-      if (getModule(namespace)) {
+      if (getNamespace(namespace)) {
         console.log(
           '~~~~ namespacejs: Ruh roh. Namespace collision on \'' + namespace +
           '\'. Not registering module.'
@@ -115,11 +115,11 @@
 
   // Attempt to remove a given module
   // from the global scope.
-  function removeGlobal (obj) {
+  function removeGlobal (namespace, obj) {
     var key;
 
     for (key in global) {
-      if (global.hasOwnProperty(key)) {
+      if (key !== namespace && global.hasOwnProperty(key)) {
         if (global[key] === obj) {
           delete global[key];
         }
@@ -176,7 +176,7 @@
     }
 
     for (i = 0; i < dependencies.length; i++) {
-      toInject = getModule(dependencies[i]);
+      toInject = getNamespace(dependencies[i]);
 
       // Is this dependency not loaded?
       if (!toInject) {
@@ -221,10 +221,7 @@
   };
 
   global.registerLibrary = function registerLibrary (namespace, module) {
-    // Is the target namespace not the global scope?
-    if (/\./.test(namespace)) {
-      removeGlobal(module);
-    }
+    removeGlobal(namespace, module);
     return registerNamespace(namespace, module);
   };
 
