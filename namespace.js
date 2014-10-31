@@ -22,7 +22,7 @@
       modules = {};     // cached module set
 
   // Save module to the stack
-  function cacheModule (namespace, module, dependencies) {
+  function cacheNamespace (namespace, module, dependencies) {
     modules[namespace] = {
       dependencies: dependencies || [],
       module: module
@@ -33,7 +33,7 @@
   // check to see if another module
   // which lists it as a dependency
   // can now be loaded
-  function checkUnloaded () {
+  function checkForUnloadedNamespaces () {
     var current,
         toLoad = unloaded;
 
@@ -73,7 +73,7 @@
   }
 
   // Create a given module!
-  function registerModule (namespace, module) {
+  function registerNamespace (namespace, module) {
     var leaf = global,
         name,
         root = global,
@@ -148,17 +148,13 @@
     return unloaded;
   };
 
-  global.deleteModule = function deleteModule (namespace) {
-    delete modules[namespace];
-  };
-
   // Get a module from the cache given its namespace.
-  global.getModule = function getModule (namespace) {
+  global.getNamespace = function getNamespace (namespace) {
     return modules[namespace];
   };
 
-  // Core method which defines a module and a namespace.
-  global.module = function module () {
+  // Core method which defines a namespace.
+  global.namespace = function namespace () {
     var args = arguments,
         closure,
         dependencies,
@@ -195,17 +191,30 @@
       params.push(toInject.module);
     }
 
-    // Create module
+    // Create module (namespace's value)
     leaf = closure.apply(global, params);
 
-    // Create namespace
-    registerModule(namespace, leaf);
+    // Does the module return a number, string or boolean,
+    // which are unsupported types?
+    if (
+      typeof leaf === 'number' ||
+      typeof leaf === 'string' ||
+      typeof leaf === 'boolean'
+    ) {
+      throw new Error('~~~~ namespacejs: Ruh roh. Unable to load \'' + namespace +
+        '\' because it creates ' + leaf + ', which is of unsupported type: ' + (typeof leaf)
+      );
+    }
 
-    cacheModule(namespace, leaf, dependencies);
+    // Create namespace
+    registerNamespace(namespace, leaf);
+
+    // Cache namespace for debugging and identifying dependencies
+    cacheNamespace(namespace, leaf, dependencies);
 
     // See if any other modules can now be loaded
     // now that this module has been loaded.
-    checkUnloaded();
+    checkForUnloadedNamespaces();
 
     // Return our new module!
     return leaf;
@@ -216,7 +225,7 @@
     if (/\./.test(namespace)) {
       removeGlobal(module);
     }
-    return registerModule(namespace, module);
+    return registerNamespace(namespace, module);
   };
 
 })(this);
