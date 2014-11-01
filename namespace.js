@@ -1,6 +1,6 @@
 /* ========================================================================
- * NamespaceJS v1.1.0
- * A Lightweight JavaScript Client-Side Module System
+ * NamespaceJS v2.0.0
+ * A Lightweight, JavaScript Module System
  *
  * Copyright (c) 2014 Abraham Walters (ninjaspankypants.com)
  * https://github.com/quidmonkey/namespacejs
@@ -61,7 +61,7 @@
   // requires it?
   function isCircularDependency (namespace, dependency) {
     var i,
-      len = unloaded.length;
+        len = unloaded.length;
 
     for (i = 0; i < len; i++) {
       if (unloaded[i].namespace === dependency) {
