@@ -26,7 +26,7 @@ gulp.task('test', function (done) {
   var karma = require('karma').server;
   
   karma.start({
-    files: ['namespace.js', 'spec.js'],
+    files: ['mocks.js', 'namespace.js', 'spec.js'],
     singleRun: !argv.keepalive,
     browsers: ['PhantomJS'],
     reporters: ['spec'],

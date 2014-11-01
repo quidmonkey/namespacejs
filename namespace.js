@@ -2,7 +2,7 @@
  * NamespaceJS v1.1.0
  * A Lightweight JavaScript Client-Side Module System
  *
- * Copyright (c) 2013 Abraham Walters (ninjaspankypants.com)
+ * Copyright (c) 2014 Abraham Walters (ninjaspankypants.com)
  * https://github.com/quidmonkey/namespacejs
  *
  * Author: Abraham Walters
@@ -196,11 +196,7 @@
 
     // Does the module return a number, string or boolean,
     // which are unsupported types?
-    if (
-      typeof leaf === 'number' ||
-      typeof leaf === 'string' ||
-      typeof leaf === 'boolean'
-    ) {
+    if (typeof leaf !== 'object' && typeof leaf !== 'function') {
       throw new Error('~~~~ namespacejs: Ruh roh. Unable to load \'' + namespace +
         '\' because it creates ' + leaf + ', which is of unsupported type: ' + (typeof leaf)
       );
