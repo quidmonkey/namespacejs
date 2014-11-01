@@ -11,6 +11,7 @@
     * Added factory enforcement check, to ensure that all namespaces return an object, function or array. This is to guarantee that the object tree is not broken. Prior to this, it was possible to have a namespace return a number, and thereby error out when attempting to add a sub-namespace.
     * registerLibrary will now remove the library's previous alias from the global scope
     * Added additional commenting to the code for Docco purposes
+    * Removed previous, deprecated examples. spec.js and mock.js now replace the older code, offering up both examples and use cases.
 
 2013-11-19: Version 1.0.0
 
