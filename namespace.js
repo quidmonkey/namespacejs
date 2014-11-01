@@ -18,10 +18,10 @@
    * private
    *****************************/
 
-  var unloaded = [],    // modules with unloaded dependencies
-      modules = {};     // cached module set
+  var unloaded = [],    // Modules with unloaded dependencies
+      modules = {};     // Cached module set
 
-  // Save module to the stack
+  // Save module to the stack.
   function cacheNamespace (namespace, module, dependencies) {
     modules[namespace] = {
       dependencies: dependencies || [],
@@ -32,7 +32,7 @@
   // Whenever a new module is added,
   // check to see if another module
   // which lists it as a dependency
-  // can now be loaded
+  // can now be loaded.
   function checkForUnloadedNamespaces () {
     var current,
         toLoad = unloaded;
@@ -191,7 +191,7 @@
       params.push(toInject.module);
     }
 
-    // Create module (namespace's value)
+    // Create module (namespace's value).
     leaf = closure.apply(global, params);
 
     // Does the module return a number, string or boolean,
@@ -202,10 +202,10 @@
       );
     }
 
-    // Create namespace
+    // Create namespace.
     registerNamespace(namespace, leaf);
 
-    // Cache namespace for debugging and identifying dependencies
+    // Cache namespace for debugging and identifying dependencies.
     cacheNamespace(namespace, leaf, dependencies);
 
     // See if any other modules can now be loaded
