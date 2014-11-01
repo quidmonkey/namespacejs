@@ -3,18 +3,18 @@ NamespaceJS
 
 ![Build Status](https://travis-ci.org/quidmonkey/namespace.svg?branch=master]
 
-UMD, CommonJS, NodeJS and ES6 module systems all are exhaustive solutions to a simple problem. At its core, modulization is an object tree, constructed of leaves, each of which encapsulates a section of code.
+UMD, CommonJS, NodeJS and ES6 module systems all are exhaustive solutions to a simple problem. At its core, modulization can be thought of as an object tree, constructed of leaves, each of which encapsulates a section of code.
 
 NamespaceJS aims to be a simple solution: it is neither thorough nor opinionated. It lets third-party solutions do their thing, while you worry about managing your own code branch.
 
-NamespaceJS is not a script loader, but a client-side module system. It does not require a compilation step, a polyfill, or any sort of shim to work; and it uglifies just fine.
+NamespaceJS is not a script loader, but a client-side module system. It does not require a compilation step, a polyfill, or any sort of shim to work; and it uglifies without issue.
 
-## Defining a Module
+## Defining a Namespace
 
-To define a module, all you must do is give it a namespace and your closed-over code:
+To define a namespace, all you must do is give it a name and your closed-over code:
 
 ```javascript
-module('Foo', function () {
+namespace('Foo', function () {
     // code
 });
 ```
@@ -24,7 +24,7 @@ This hangs an object named Foo off of the global scope.
 A namespace can have multiple sub-namespaces, each delimited by a '.':
 
 ```javascript
-module('Foo.Bar', function () {
+namespace('Foo.Bar', function () {
     // code
 });
 ```
@@ -34,19 +34,23 @@ This hangs an object named Foo off of the global scope, which has a sub-object n
 You can namespace things as far down as you like, and NamespaceJS will create the intermediary leaf as it traverses the tree to the desired namespace:
 
 ```javascript
-module('I.Am.An.Arbitrary.Namespace', function () {
+namespace('I.Am.An.Arbitrary.Namespace', function () {
     // code 
 });
 ```
 
 This creates a namespace branch 5 layers deep, and all 4 intermediary namespaces (I, Am, An and Arbitrary) will be created as empty objects.
 
-If you accidentally give two modules the same namespace, NamespaceJS will kindly inform you of the conflict by logging a warning. In addition, if a namespace is not capitalized, NamespaceJS will kindly inform you so that you can conform to the best practice of capitalizing your modules, and thereby, avoid naming collisions.
+If you accidentally give two namespaces the same name, NamespaceJS will kindly inform you of the conflict by logging a warning. In addition, if a namespace is not capitalized, NamespaceJS will kindly inform you so that you can conform to the best practice of capitalizing your modules, and thereby, avoid naming collisions.
 
-For convenience, the module method returns any value returned by the closed over code:
+## Factory Pattern
+
+NamespaceJS enforces a factory pattern, expecting any namespace to return an object, function or array. This is due to the object tree requiring nodes to be interconnected. Returning a boolean, string or number will result in an error.
+
+For convenience, the namespace method returns any value returned by the closed over code:
 
 ```javascript
-var FooClass = module('Foo', function () {
+var FooClass = namespace('Foo', function () {
     // initialize & private code
     return function (options) {
         // constructor code
@@ -56,14 +60,14 @@ var FooClass = module('Foo', function () {
 var fooInstance = new FooClass();
 ```
 
-Several mocked examples are include in the mocks.js file.
+Several mocked examples are included in the mocks.js file. You are also encouraged to dig into the spec.js file and review the unit tests, as many examples and use cases are included therein.
 
 ## Dependency Injection
 
 A module system is not complete without a dependency injection system. NamespaceJS features a simple dependency injection solution that loads module as specified dependencies become available:
 
 ```javascript
-module('Foo.Bar', ['Foo'], function (Foo) {
+namespace('Foo.Bar', ['Foo'], function (Foo) {
     // code
 });
 ```
@@ -80,7 +84,7 @@ This is the same Bar example as noted above, save that Foo is now being injected
 You can inject as many dependencies as you like:
 
 ```javascript
-module('Foo.Bar.Baz', ['Foo', 'Foo.Bar'], function (Foo, Bar) {
+namespace('Foo.Bar.Baz', ['Foo', 'Foo.Bar'], function (Foo, Bar) {
     // code
 });
 ```
@@ -92,8 +96,8 @@ Here, both Foo and Bar will be injected into Baz.
 It is important to avoid circular dependencies:
 
 ```javascript
-module('Namespace.One', ['Namespace.Two'], function (namespaceTwo) {});
-module('Namespace.Two', ['Namespace.One'], function (namespaceOne) {});
+namespace('Namespace.One', ['Namespace.Two'], function (namespaceTwo) {});
+namespace('Namespace.Two', ['Namespace.One'], function (namespaceOne) {});
 ```
 
 Here Namespace.One is requiring Namespace.Two and vice versa, each preventing the other from loading. NamespaceJS will catch this condition for you and throw an error.
@@ -106,10 +110,10 @@ Third party libraries can be registered like so:
 registerLibrary('$', $);
 ```
 
-These libraries can then be injected like any other module:
+These libraries can then be injected like any other namespace:
 
 ```javascript
-module('Foo', ['$'], function ($) {
+namespace('Foo', ['$'], function ($) {
     // code
 });
 ```
@@ -119,10 +123,9 @@ If a third party module is namespaced somewhere other than the global scope, it 
 ## API
 
 * `debugNamespaces()` - Prints out a list of any unloaded dependencies. Useful for debugging.
-* `deleteModule(string)` - String specifies a namespace. Deletes the module from the hash.
-* `getModule(string)` - String specifies a namespace. Gets the module at the given namespace.
-* `module(string, function)` - String specifies a namespace, function a closure. Creates a module on the given namespace using the closed over code block. Returns any return value from the closed over code block.
-* `module(string, array, function)` - String specifies a namespace, array a list of strings which are dependencies to be injected, function a closure. Creates a module on the given namespace using the closed over code block and injecting the given dependencies into the closure.
+* `getNamespace(string)` - String specifies a namespace. Gets the module at the given namespace.
+* `namespace(string, function)` - String specifies a namespace, function a closure. Creates a module on the given namespace using the closed over code block. Returns any return value from the closed over code block.
+* `namespace(string, array, function)` - String specifies a namespace, array a list of strings which are dependencies to be injected, function a closure. Creates a module on the given namespace using the closed over code block and injecting the given dependencies into the closure.
 * `registerLibrary(string, object)` - String specifies a namespace, object a module (or library) to store on the namespace. Registers an object on the given namespace. This will attempt to remove the library from the global scope. Useful for namespacing third party libraries.
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/20e24f332601aac16a37554432cdad67 "githalytics.com")](http://githalytics.com/quidmonkey/namespacejs)
