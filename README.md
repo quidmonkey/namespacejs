@@ -1,7 +1,7 @@
 NamespaceJS
 ===========
 
-![Build Status](https://travis-ci.org/quidmonkey/namespace.svg?branch=master]
+![Build Status](https://travis-ci.org/quidmonkey/namespace.svg?branch=master)
 
 UMD, CommonJS, NodeJS and ES6 module systems all are exhaustive solutions to a simple problem. At its core, modulization can be thought of as an object tree, constructed of leaves, each of which encapsulates a section of code.
 
