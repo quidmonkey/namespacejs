@@ -122,6 +122,7 @@
       if (key !== namespace && global.hasOwnProperty(key)) {
         if (global[key] === obj) {
           delete global[key];
+          return;
         }
       }
     }
