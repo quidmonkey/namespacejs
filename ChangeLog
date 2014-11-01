@@ -1,11 +1,16 @@
-2014-10-30: Version 1.1.0
+2014-10-30: Version 2.0.0
 
-    * Added gulpfile for building, testing and documentation.
+    * Added gulpfile for building, testing and documentation
     * Added unit testing with Jasmine
-    * Removed the registerModule from api and exposed registerLibrary for registering third party libraries
     * Added TravisCI integration
     * Added changelog and gitignore
-    * Added deleteModule to api
+    * Renamed:
+        ** getModule => getNamespace
+        ** module => namespace
+        ** registerModule => registerLibrary
+    * Added factory enforcement check, to ensure that all namespaces return an object, function or array. This is to guarantee that the object tree is not broken. Prior to this, it was possible to have a namespace return a number, and thereby error out when attempting to add a sub-namespace.
+    * registerLibrary will now remove the library's previous alias from the global scope
+    * Added additional commenting to the code for Docco purposes
 
 2013-11-19: Version 1.0.0
 
