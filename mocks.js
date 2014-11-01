@@ -19,7 +19,10 @@ var Mocks = {
 
     Empty: function () { return {}; },
 
-    ObjectFactory: function () { return {}; },
+    ArrayFactory: function () { return []; },
     FunctionFactory: function () { return function () {}; },
-    ArrayFactory: function () { return []; } 
+    ObjectFactory: function () { return {}; },
+
+    ModuleOne: function () { return {}; },
+    ModuleTwo: function (ModuleOne) { return {}; }
 };

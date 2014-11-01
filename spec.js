@@ -39,6 +39,7 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
 
   it('should create a sub-namespace', function () {
     namespace('MyNamespace.MySubNamespace', Mocks.Empty);
+
     expect('MyNamespace' in window).toBeTruthy();
     expect('MySubNamespace' in MyNamespace).toBeTruthy();
     expect(Mocks.Empty).toHaveBeenCalled();
@@ -46,6 +47,7 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
 
   it('should create an arbitrary number of sub-namespaces, creating each leaf along the way', function () {
     namespace('I.Am.An.Arbitrary.Namespace', Mocks.Empty);
+
     expect('I' in window).toBeTruthy();
     expect('Am' in I).toBeTruthy();
     expect('An' in I.Am).toBeTruthy();
@@ -56,6 +58,7 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
 
   it('should allow object factory pattern namespaces to be defined', function () {
     namespace('ExampleObjectFactory', Mocks.ObjectFactory);
+
     expect(ExampleObjectFactory).toEqual(jasmine.any(Object));
   });
 
@@ -71,6 +74,7 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
 
   it('should create a object namespace with attributes', function () {
     namespace('Foo', Mocks.Foo);
+
     expect(Foo).toEqual(jasmine.any(Object));
     expect(Foo.x).toEqual(1);
     expect(Foo.y).toEqual('Hello');
@@ -78,9 +82,18 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
 
   it('should inject dependencies', function () {
     namespace('Bar', ['Foo'], Mocks.Bar);
+
     expect(Mocks.Bar).toHaveBeenCalledWith(Foo);
     expect(Bar).toEqual(jasmine.any(Function));
     expect(Bar('Joe')).toEqual('Hello Joe');
+  });
+
+  it('should load a module when its dependency is loaded', function () {
+    namespace('ModuleTwo', ['ModuleOne'], Mocks.ModuleTwo);
+    namespace('ModuleOne', Mocks.ModuleOne);
+
+    expect(getNamespace('ModuleOne')).toEqual({ dependencies : [], module : {} });
+    expect(getNamespace('ModuleTwo')).toEqual({ dependencies : ['ModuleOne'], module : {} });
   });
 
   it('should register libraries and remove from global scope', function () {
@@ -114,7 +127,6 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
   });
 
   it('should generate a warning on duplicate namespace', function () {
-    console.log(getNamespace('Foo'));
     namespace('Foo', Mocks.Empty);
 
     expect(console.log).toHaveBeenCalledWith('~~~~ namespacejs: Ruh roh. Namespace collision on \'Foo\'. Not registering module.');
@@ -122,13 +134,18 @@ describe('NamespaceJS: A Lightweight JavaScript Module System', function () {
 
   it('should warn about bad capitilization practices', function () {
     namespace('bad.practice', Mocks.Empty);
+
     expect(console.log).toHaveBeenCalled();    
     expect(console.log).toHaveBeenCalledWith('~~~~ namespacejs: Ruh roh. It is best practice to capitalize \'practice\' in namespace \'bad.practice\' to avoid naming collisions.');
   });
 
   it('should throw an error on circular dependencies', function () {
-      var wrappedModule = function () { namespace('Namespace.Two', ['Namespace.One'], Mocks.Empty); };
-      namespace('Namespace.One', ['Namespace.Two'], Mocks.Empty);
-      expect(wrappedModule).toThrow(new Error('~~~~ namespacejs: Ruh roh. Unable to load \'Namespace.Two\' because it has a circular dependency on \'Namespace.One\''));
+    var errFunction = function () {
+      namespace('Namespace.Two', ['Namespace.One'], Mocks.Empty);
+    };
+
+    namespace('Namespace.One', ['Namespace.Two'], Mocks.Empty);
+
+    expect(errFunction).toThrow(new Error('~~~~ namespacejs: Ruh roh. Unable to load \'Namespace.Two\' because it has a circular dependency on \'Namespace.One\''));
   });
 });
